@@ -38,10 +38,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/edituser")
-    public ModelAndView editUser(@RequestParam("id") Long id, @ModelAttribute("user") User user) {
+    public ModelAndView editUser(@ModelAttribute("user") User user) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/");
-        userService.editUser(id, user);
+        userService.editUser(user);
         return modelAndView;
     }
 
