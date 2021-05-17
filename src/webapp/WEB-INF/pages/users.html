@@ -20,37 +20,34 @@
         <thead class="table-dark">
         <tr>
             <th>Id</th>
-            <th>FirstName</th>
-            <th>LastName</th>
-            <th>Email</th>
-            <th>Age</th>
+            <th>UserName</th>
+            <th>Roles</th>
+            <th>Password</th>
+            <th>IsActive</th>
         </tr>
         </thead>
         <tr th:each="user : ${usersList}">
             <td data-field="id" name="id" th:text="${user.getId()}">ID</td>
-            <td data-field="firstName" name="fname" th:text="${user.getFirstName()}">FirstName</td>
-            <td data-field="lastName" name="lname" th:text="${user.getLastName()}">LastName</td>
-            <td data-field="email" name="email" th:text="${user.getEmail()}">Email</td>
-            <td data-field="age" name="age" th:text="${user.getAge()}">Age</td>
+            <td data-field="username" name="uname" th:text="${user.getUsername()}">UserName</td>
+            <td data-field="roles" name="roles" th:text="${user.getRoles()}">Roles</td>
+            <td data-field="password" name="password" th:text="${user.getPassword()}">password</td>
         </tr>
     </table>
     <b>Add New Members</b>
     <table class="table table-borded table-responsive table-striped">
         <thead class="table-dark">
         <tr>
-            <th>FirstName</th>
-            <th>LastName</th>
-            <th>Email</th>
-            <th>Age</th>
+            <th>Username</th>
+            <th>Roles</th>
+            <th>Password</th>
             <th colspan="2">Action</th>
         </tr>
         </thead>
         <tr>
             <form th:method="POST" th:action="@{/adduser}" th:object="${user}">
-                <td data-field="firstName"><input type="text" th:field="*{firstName}" id="firstName"/></td>
-                <td data-field="lastName"><input type="text" th:field="*{lastName}" id="lastName"/></td>
-                <td data-field="email"><input type="text" th:field="*{email}" id="email"></td>
-                <td data-field="age"><input type="text" th:field="*{age}" id="age" value=""/></td>
+                <td data-field="username"><input type="text" th:field="*{username}" id="username" value=""/></td>
+                <td data-field="roles"><input type="text" th:field="*{roles}" id="roles" value=""/></td>
+                <td data-field="password"><input type="text" th:field="*{password}" id="password" value=""/></td>
                 <td data-field="addBtn"><input type="submit" value="Add"/></td>
                 <td data-field="clnBtn"><input type="reset" value="Clean"/></td>
             </form>
@@ -61,7 +58,7 @@
 <script src="/static/js/editable.js"></script>
 <script>
     $("#table-editable").setEditable({
-        columnsEd: "1,2,3,4",
+        columnsEd: "1,2,3",
         beforeDelete: function (row) {
             $.get("/deluser", {
                 id: $(row).children("td:nth-child(1)").text()
@@ -69,16 +66,14 @@
         },
         afterEdit: function (row) {
             var id = $(row).children('td[name="id"]').text();
-            var fname = $(row).children('td[name="fname"]').text();
-            var lname = $(row).children('td[name="lname"]').text();
-            var email = $(row).children('td[name="email"]').text();
-            var age = $(row).children('td[name="age"]').text();
+            var uname = $(row).children('td[name="uname"]').text();
+            var roles = $(row).children('td[name="roles"]').text();
+            var password = $(row).children('td[name="password"]').text();
             $.post("/edituser", {
                 id: id,
-                firstName: fname,
-                lastName: lname,
-                email: email,
-                age: age
+                username: uname,
+                roles: roles,
+                password: password
             })
         }
     });

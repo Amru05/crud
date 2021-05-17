@@ -1,5 +1,6 @@
 package web.dao;
 
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import web.model.User;
@@ -18,7 +19,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getUsers() {
-        return entityManager.createQuery("from User").getResultList();
+        return entityManager.createQuery("FROM User").getResultList();
     }
 
     @Override
@@ -28,7 +29,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void delUser(Long id) {
-        entityManager.createQuery("delete from User where id = :id_param")
+        entityManager.createQuery("DELETE FROM User WHERE id = :id_param")
                 .setParameter("id_param", id)
                 .executeUpdate();
     }
@@ -40,9 +41,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getById(Long id) {
-        User user = entityManager.createQuery("from User where id = :id_param", User.class)
+        return entityManager.createQuery("FROM User WHERE id = :id_param", User.class)
                 .setParameter("id_param", id)
                 .getSingleResult();
-        return user;
+    }
+
+    @Override
+    public User getByUsername(String username) {
+        return entityManager.createQuery("FROM User WHERE username = :username_param", User.class)
+                .setParameter("username_param", username)
+                .getSingleResult();
     }
 }
