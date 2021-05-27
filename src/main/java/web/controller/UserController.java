@@ -42,7 +42,7 @@ public class UserController {
         return modelAndView;
     }
 
-    @RequestMapping(path = "/admin/adduser", method = RequestMethod.POST)
+    @PostMapping(path = "/admin/adduser")
     public ModelAndView addUser(@ModelAttribute("user") User user,
                                 @RequestParam("roles") String[] rolesName) {
         Set<Role> tmpRole = new HashSet<>();
