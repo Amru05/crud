@@ -1,41 +1,40 @@
 package web.model;
 
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-//public class User implements UserDetails {
 public class User  {
-    public static final String TABLE_NAME = "users";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "username", unique = true)
-//    @Size(min=4, max=30)
     private String username;
+
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Column(name = "enabled")
+    private boolean enabled;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-    )
-    private Set<Role> roles;
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName="id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName="id")})
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }
 
-    public User(String username, String password, Set<Role> roles) {
+    public User(String username, String password, boolean enabled, Set<Role> roles) {
         this.username = username;
         this.password = password;
+        this.enabled = enabled;
         this.roles = roles;
     }
 
@@ -63,39 +62,24 @@ public class User  {
         this.roles = roles;
     }
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return roles;
-//    }
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
 
-//    @Override
+    public boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getPassword() {
         return this.password;
     }
 
-//    @Override
     public String getUsername() {
         return this.username;
-    }
-
-//    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-//    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-//    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-//    @Override
-    public boolean isEnabled() {
-        return true;
     }
 
     @Override
@@ -104,6 +88,7 @@ public class User  {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", enabled=" + enabled +
                 ", roles=" + roles +
                 '}';
     }

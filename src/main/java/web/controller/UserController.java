@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import web.model.Role;
 import web.model.User;
 import web.service.UserService;
 
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class UserController {
@@ -29,26 +30,69 @@ public class UserController {
         return modelAndView;
     }
 
-    @PostMapping(value = "/adduser")
-    public ModelAndView addUser(@ModelAttribute("user") User user) {
+    @GetMapping(value = "/admin")
+    public ModelAndView showUsers() {
+        List<User> usersList = userService.getUsers();
+        List<Role> rolesList = userService.getAllRoles();
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/");
-        userService.addUser(user);
+        modelAndView.addObject("usersList", usersList);
+        modelAndView.addObject("rolesList", rolesList);
+        modelAndView.addObject("user", new User());
+        modelAndView.setViewName("show");
         return modelAndView;
     }
 
-    @PostMapping(value = "/edituser")
-    public ModelAndView editUser(@ModelAttribute("user") User user) {
+    @RequestMapping(path = "/admin/adduser", method = RequestMethod.POST)
+    public ModelAndView addUser(@ModelAttribute("user") User user,
+                                @RequestParam("roles") String[] rolesName) {
+        Set<Role> tmpRole = new HashSet<>();
+        if(rolesName.length==0) {
+            tmpRole.add(userService.getRoleByName("User"));
+        } else {
+            for (String role : rolesName) {
+                tmpRole.add(userService.getRoleByName(role));
+            }
+        }
+
+        user.setRoles(tmpRole);
+        userService.addUser(user);
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/");
+        modelAndView.setViewName("redirect:/admin");
+        return modelAndView;
+    }
+
+    @GetMapping(value = "/admin/edituser/{id}")
+    public ModelAndView showEditUser(@PathVariable("id") Long id)
+    {
+        ModelAndView modelAndView = new ModelAndView();
+        User user = userService.getById(id);
+        System.out.println("We edited user: " + user);
+        modelAndView.addObject("user", user);
+        modelAndView.addObject("rolesList", userService.getAllRoles());
+        modelAndView.setViewName("edit");
+        return modelAndView;
+    }
+
+    @PostMapping(value = "/admin/edituser")
+    public ModelAndView editUser(@ModelAttribute("user") User user,
+                                 @RequestParam("roles") String[] rolesName) {
+        ModelAndView modelAndView = new ModelAndView();
+        System.out.println("We merge edited user: " + user);
+        System.out.println("With roles: " + rolesName);
+        Set<Role> tmpRole = new HashSet<>();
+        for(String role : rolesName) {
+            tmpRole.add(userService.getRoleByName(role));
+        }
+        user.setRoles(tmpRole);
+        modelAndView.setViewName("redirect:/admin");
         userService.editUser(user);
         return modelAndView;
     }
 
-    @GetMapping(value = "/deluser")
-    public ModelAndView delUser(@RequestParam("id") Long id) {
+    @GetMapping(value = "/admin/deluser/{id}")
+    public ModelAndView delUser(@PathVariable("id") Long id) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/");
+        modelAndView.setViewName("redirect:/admin");
         userService.delUser(id);
         return modelAndView;
     }

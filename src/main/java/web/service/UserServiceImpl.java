@@ -1,23 +1,26 @@
 package web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import web.dao.RoleDao;
 import web.dao.UserDao;
+import web.model.Role;
 import web.model.User;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private UserDao userDao;
+    private RoleDao roleDao;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, RoleDao roleDao) {
         this.userDao = userDao;
+        this.roleDao = roleDao;
     }
 
     @Override
@@ -42,22 +45,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(Long id) {
-        return null;
+        return userDao.getById(id);
     }
-
 
     public User getByUsername(String name) {
         return userDao.getByUsername(name);
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-//        User user = userDao.getByUsername(name);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("Unknow user: " + name);
-//        }
-//        return user;
-//    }
 
+    @Override
+    public List<Role> getAllRoles() {
+        return roleDao.getAllRoles();
+    }
+
+    @Override
+    public Role getRoleByName(String name){
+        return roleDao.getByName(name);
+    }
 
 }

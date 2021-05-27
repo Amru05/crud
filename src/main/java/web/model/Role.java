@@ -1,22 +1,22 @@
 package web.model;
 
-//import org.springframework.security.core.GrantedAuthority;
-
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-//public class Role implements GrantedAuthority {
 public class Role {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "roleName")
     private String roleName;
 
-//    @Transient
-    @ManyToMany(mappedBy = "roles")
+    @Transient
+    @ManyToMany(mappedBy = "roles",
+            fetch = FetchType.EAGER)
     private Set<User> users;
 
     public Role() {
@@ -24,6 +24,10 @@ public class Role {
 
     public Role(Long id) {
         this.id = id;
+    }
+
+    public Role(String roleName) {
+        this.roleName = roleName;
     }
 
     public Role(Long id, String roleName) {
@@ -55,8 +59,27 @@ public class Role {
         this.users = users;
     }
 
-//    @Override
-    public String getAuthority() {
+    @Override
+    public String toString() {
         return this.roleName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        if (id == null) {
+            if (role.id != null) return false;
+        } else if (!id.equals(role.id)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int num = 31;
+        int res = 1;
+        res = num * res + (((id == null)) ? 0 : id.hashCode());
+        return res;
     }
 }
